@@ -20,6 +20,12 @@ func main() {
 		log.Fatalf("ERROR: .env unreadable: %v", err)
 	}
 
+	dbQueries := getDbQueries()
+
+	cfg := apiConfig{dbQueries}
+}
+
+func getDbQueries() *database.Queries {
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
 		log.Fatalln("ERROR: DATABASE_URL environment variable is not set")
@@ -28,8 +34,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("ERROR: Unnable to cannect to database: %v", err)
 	}
-
-	dbQueries := database.New(db)
-
-	cfg := apiConfig{dbQueries}
+	log.Println("INFO: Connected to the database")
+	return database.New(db)
 }
