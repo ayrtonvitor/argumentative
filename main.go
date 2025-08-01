@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/ayrtonvitor/argumentative/internal/database"
@@ -22,7 +23,18 @@ func main() {
 
 	dbQueries := getDbQueries()
 
-	cfg := apiConfig{dbQueries}
+	cfg := &apiConfig{dbQueries}
+
+	mux := http.NewServeMux()
+	registerEndpoints(mux, cfg)
+
+	srv := http.Server{
+		Addr:    ":8080",
+		Handler: mux,
+	}
+
+	log.Println("Serving on port 8080")
+	log.Fatal(srv.ListenAndServe())
 }
 
 func getDbQueries() *database.Queries {
@@ -36,4 +48,8 @@ func getDbQueries() *database.Queries {
 	}
 	log.Println("INFO: Connected to the database")
 	return database.New(db)
+}
+
+func registerEndpoints(mux *http.ServeMux, cfg *apiConfig) {
+	mux.HandleFunc("POST /api/thesis", cfg.handleThesisCreation)
 }
