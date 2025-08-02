@@ -24,17 +24,7 @@ func main() {
 	dbQueries := getDbQueries()
 
 	cfg := &apiConfig{dbQueries}
-
-	mux := http.NewServeMux()
-	registerEndpoints(mux, cfg)
-
-	srv := http.Server{
-		Addr:    ":8080",
-		Handler: mux,
-	}
-
-	log.Println("Serving on port 8080")
-	log.Fatal(srv.ListenAndServe())
+	cfg.startHttpServer()
 }
 
 func getDbQueries() *database.Queries {
