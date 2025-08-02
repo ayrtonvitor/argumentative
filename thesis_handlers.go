@@ -1,8 +1,36 @@
 package main
 
-import "net/http"
+import (
+	"database/sql"
+	"encoding/json"
+	"net/http"
+
+	"github.com/ayrtonvitor/argumentative/internal/database"
+)
 
 func (cfg *apiConfig) handleThesisCreation(w http.ResponseWriter, r *http.Request) {
-	cfg.DB.CreateThesis(r.Context(), "A wild thesis appears")
-	w.WriteHeader(http.StatusOK)
+	type parameters struct {
+		Title       string `json:"title"`
+		Description string `json:"description"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	params := parameters{}
+	err := decoder.Decode(&params)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Could not create Thesis", err)
+		return
+	}
+
+	created, err := cfg.DB.CreateThesis(r.Context(), database.CreateThesisParams{
+		Title:       params.Title,
+		Description: sql.NullString{String: params.Description, Valid: true},
+	})
+
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Colud not create thesis", err)
+		return
+	}
+
+	respondWithJSON(w, http.StatusCreated, created)
 }
