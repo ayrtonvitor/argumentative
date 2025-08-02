@@ -19,6 +19,6 @@ func (cfg *apiConfig) startHttpServer() {
 		Handler: mux,
 	}
 
-	log.Printf("Serving on port %s\n", port)
+	log.Printf("INFO: Serving on port %s\n", port)
 	log.Fatal(srv.ListenAndServe())
 }
