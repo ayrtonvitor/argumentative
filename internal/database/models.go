@@ -5,6 +5,7 @@
 package database
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -15,4 +16,5 @@ type Thesis struct {
 	CreationDate   time.Time
 	LastUpdateTime time.Time
 	Title          string
+	Description    sql.NullString
 }

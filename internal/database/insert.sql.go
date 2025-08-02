@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createThesis = `-- name: CreateThesis :one
@@ -14,23 +15,31 @@ INSERT INTO thesis (
     id,
     creation_date,
     last_update_time,
-    title
+    title,
+	description
 ) VALUES (
     gen_random_uuid(),
     NOW(),
     NOW(),
-    $1
-) RETURNING id, creation_date, last_update_time, title
+    $1,
+	$2
+) RETURNING id, creation_date, last_update_time, title, description
 `
 
-func (q *Queries) CreateThesis(ctx context.Context, title string) (Thesis, error) {
-	row := q.db.QueryRowContext(ctx, createThesis, title)
+type CreateThesisParams struct {
+	Title       string
+	Description sql.NullString
+}
+
+func (q *Queries) CreateThesis(ctx context.Context, arg CreateThesisParams) (Thesis, error) {
+	row := q.db.QueryRowContext(ctx, createThesis, arg.Title, arg.Description)
 	var i Thesis
 	err := row.Scan(
 		&i.ID,
 		&i.CreationDate,
 		&i.LastUpdateTime,
 		&i.Title,
+		&i.Description,
 	)
 	return i, err
 }
