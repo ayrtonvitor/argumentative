@@ -12,7 +12,8 @@ import (
 )
 
 type apiConfig struct {
-	DB *database.Queries
+	db      *sql.DB
+	queries *database.Queries
 }
 
 func main() {
@@ -21,13 +22,13 @@ func main() {
 		log.Fatalf("ERROR: .env unreadable: %v", err)
 	}
 
-	dbQueries := getDbQueries()
+	db, queries := getDbQueries()
 
-	cfg := &apiConfig{dbQueries}
+	cfg := &apiConfig{db, queries}
 	cfg.startHttpServer()
 }
 
-func getDbQueries() *database.Queries {
+func getDbQueries() (*sql.DB, *database.Queries) {
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
 		log.Fatalln("ERROR: DATABASE_URL environment variable is not set")
@@ -37,7 +38,7 @@ func getDbQueries() *database.Queries {
 		log.Fatalf("ERROR: Unnable to cannect to database: %v", err)
 	}
 	log.Println("INFO: Connected to the database")
-	return database.New(db)
+	return db, database.New(db)
 }
 
 func registerEndpoints(mux *http.ServeMux, cfg *apiConfig) {

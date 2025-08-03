@@ -22,7 +22,7 @@ func (cfg *apiConfig) handleThesisCreation(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	created, err := cfg.DB.CreateThesis(r.Context(), database.CreateThesisParams{
+	created, err := cfg.queries.CreateThesis(r.Context(), database.CreateThesisParams{
 		Title:       params.Title,
 		Description: sql.NullString{String: params.Description, Valid: true},
 	})
