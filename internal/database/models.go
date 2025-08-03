@@ -19,6 +19,14 @@ type Argument struct {
 	Description    sql.NullString
 }
 
+type Argumentsource struct {
+	ID             uuid.UUID
+	CreationDate   time.Time
+	LastUpdateTime time.Time
+	Content        sql.NullString
+	ArgumentID     uuid.UUID
+}
+
 type Thesis struct {
 	ID             uuid.UUID
 	CreationDate   time.Time

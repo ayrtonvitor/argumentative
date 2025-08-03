@@ -8,6 +8,8 @@ package database
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const createArgument = `-- name: CreateArgument :one
@@ -41,6 +43,42 @@ func (q *Queries) CreateArgument(ctx context.Context, arg CreateArgumentParams) 
 		&i.LastUpdateTime,
 		&i.Brief,
 		&i.Description,
+	)
+	return i, err
+}
+
+const createArgumentSources = `-- name: CreateArgumentSources :one
+INSERT INTO argumentSources (
+  id,
+  creation_date,
+  last_update_time,
+  content,
+  argument_id
+)
+VALUES (
+  gen_random_uuid(),
+  NOW(),
+  NOW(),
+  $1,
+  $2
+)
+RETURNING id, creation_date, last_update_time, content, argument_id
+`
+
+type CreateArgumentSourcesParams struct {
+	Content    sql.NullString
+	ArgumentID uuid.UUID
+}
+
+func (q *Queries) CreateArgumentSources(ctx context.Context, arg CreateArgumentSourcesParams) (Argumentsource, error) {
+	row := q.db.QueryRowContext(ctx, createArgumentSources, arg.Content, arg.ArgumentID)
+	var i Argumentsource
+	err := row.Scan(
+		&i.ID,
+		&i.CreationDate,
+		&i.LastUpdateTime,
+		&i.Content,
+		&i.ArgumentID,
 	)
 	return i, err
 }

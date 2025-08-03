@@ -1,8 +1,8 @@
 -- +goose Up
-CREATE TABLE argument_sources (
+CREATE TABLE argumentSources (
   id UUID PRIMARY KEY,
-    creation_date TIMESTAMP NOT NULL,
-    last_update_time TIMESTAMP NOT NULL,
+  creation_date TIMESTAMP NOT NULL,
+  last_update_time TIMESTAMP NOT NULL,
   content TEXT,
   argument_id UUID NOT NULL,
   FOREIGN KEY (argument_id)
@@ -11,4 +11,4 @@ CREATE TABLE argument_sources (
 );
 
 -- +goose Down
-DROP TABLE thesis_argument;
+DROP TABLE argumentSources;
