@@ -11,6 +11,14 @@ import (
 	"github.com/google/uuid"
 )
 
+type Argument struct {
+	ID             uuid.UUID
+	CreationDate   time.Time
+	LastUpdateTime time.Time
+	Brief          string
+	Description    sql.NullString
+}
+
 type Thesis struct {
 	ID             uuid.UUID
 	CreationDate   time.Time

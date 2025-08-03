@@ -10,19 +10,54 @@ import (
 	"database/sql"
 )
 
+const createArgument = `-- name: CreateArgument :one
+INSERT INTO argument (
+  id,
+  creation_date,
+  last_update_time,
+  brief,
+  description
+)
+VALUES (
+  gen_random_uuid(),
+  NOW(),
+  NOW(),
+  $1,
+  $2
+) RETURNING id, creation_date, last_update_time, brief, description
+`
+
+type CreateArgumentParams struct {
+	Brief       string
+	Description sql.NullString
+}
+
+func (q *Queries) CreateArgument(ctx context.Context, arg CreateArgumentParams) (Argument, error) {
+	row := q.db.QueryRowContext(ctx, createArgument, arg.Brief, arg.Description)
+	var i Argument
+	err := row.Scan(
+		&i.ID,
+		&i.CreationDate,
+		&i.LastUpdateTime,
+		&i.Brief,
+		&i.Description,
+	)
+	return i, err
+}
+
 const createThesis = `-- name: CreateThesis :one
 INSERT INTO thesis (
-    id,
-    creation_date,
-    last_update_time,
-    title,
-	description
+  id,
+  creation_date,
+  last_update_time,
+  title,
+  description
 ) VALUES (
-    gen_random_uuid(),
-    NOW(),
-    NOW(),
-    $1,
-	$2
+  gen_random_uuid(),
+  NOW(),
+  NOW(),
+  $1,
+  $2
 ) RETURNING id, creation_date, last_update_time, title, description
 `
 
