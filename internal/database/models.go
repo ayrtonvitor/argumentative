@@ -34,3 +34,8 @@ type Thesis struct {
 	Title          string
 	Description    sql.NullString
 }
+
+type ThesisArgument struct {
+	ThesisID   uuid.UUID
+	ArgumentID uuid.UUID
+}
