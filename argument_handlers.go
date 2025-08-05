@@ -10,14 +10,14 @@ import (
 )
 
 func (cfg *apiConfig) handleArgumentCreation(w http.ResponseWriter, r *http.Request) {
-	type parameterns struct {
+	type parameters struct {
 		Brief       string    `json:"brief"`
 		Description string    `json:"description"`
 		ThesisId    uuid.UUID `json:"thesisId"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	params := parameterns{}
+	params := parameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Could not create argument", err)
@@ -54,5 +54,5 @@ func (cfg *apiConfig) handleArgumentCreation(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, created)
+	respondWithJSON(w, http.StatusCreated, created)
 }
