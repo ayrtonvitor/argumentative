@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/ayrtonvitor/argumentative/internal/database"
+	"github.com/ayrtonvitor/argumentative/internal/view"
 	"github.com/google/uuid"
 )
 
@@ -47,7 +48,7 @@ func (cfg *apiConfig) handleGetThesisById(w http.ResponseWriter, r *http.Request
 	}
 
 	thesisIds := make([]uuid.UUID, 0)
-	for _, rawThesisId := range strings.Split(rawThesisIds, idListSep) {
+	for rawThesisId := range strings.SplitSeq(rawThesisIds, idListSep) {
 		thesisId, err := uuid.Parse(rawThesisId)
 		if err != nil {
 			respondWithError(w, http.StatusBadRequest, "Thesis id is malformed", err)
@@ -56,11 +57,27 @@ func (cfg *apiConfig) handleGetThesisById(w http.ResponseWriter, r *http.Request
 		thesisIds = append(thesisIds, thesisId)
 	}
 
-	created, err := cfg.queries.GetThesisById(r.Context(), thesisIds)
+	theses, err := cfg.queries.GetThesisById(r.Context(), thesisIds)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Could not get thesis", err)
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, created)
+	arguments, err := cfg.queries.GetArgumentFromThesisId(r.Context(), thesisIds)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Could not get thesis", err)
+		return
+	}
+	argumentIds := make([]uuid.UUID, 0)
+	for _, arg := range arguments {
+		argumentIds = append(argumentIds, arg.ID)
+	}
+
+	sources, err := cfg.queries.GetSourceFromArgumentId(r.Context(), argumentIds)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Could not get thesis", err)
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, view.GetTheses(theses, arguments, sources))
 }
