@@ -12,6 +12,48 @@ import (
 	"github.com/lib/pq"
 )
 
+const getArgumentFromThesisId = `-- name: GetArgumentFromThesisId :many
+SELECT
+  argument.id,
+  argument.creation_date,
+  argument.last_update_time,
+  argument.brief,
+  argument.description
+FROM argument
+JOIN thesis_argument
+  ON argument.id = thesis_argument.argument_id
+WHERE thesis_argument.thesis_id = $1
+`
+
+func (q *Queries) GetArgumentFromThesisId(ctx context.Context, thesisID uuid.UUID) ([]Argument, error) {
+	rows, err := q.db.QueryContext(ctx, getArgumentFromThesisId, thesisID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Argument
+	for rows.Next() {
+		var i Argument
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreationDate,
+			&i.LastUpdateTime,
+			&i.Brief,
+			&i.Description,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getThesisById = `-- name: GetThesisById :many
 SELECT
   id,
