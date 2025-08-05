@@ -44,4 +44,5 @@ func getDbQueries() (*sql.DB, *database.Queries) {
 func registerEndpoints(mux *http.ServeMux, cfg *apiConfig) {
 	mux.HandleFunc("POST /api/thesis", cfg.handleThesisCreation)
 	mux.HandleFunc("POST /api/argument", cfg.handleArgumentCreation)
+	mux.HandleFunc("POST /api/source", cfg.handleSourceCreation)
 }
