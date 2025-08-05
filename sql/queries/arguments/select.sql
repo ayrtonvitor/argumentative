@@ -4,7 +4,8 @@ SELECT
   argument.creation_date,
   argument.last_update_time,
   argument.brief,
-  argument.description
+  argument.description,
+  thesis_argument.thesis_id
 FROM argument
 JOIN thesis_argument
   ON argument.id = thesis_argument.argument_id

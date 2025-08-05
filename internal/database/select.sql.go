@@ -7,6 +7,8 @@ package database
 
 import (
 	"context"
+	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
@@ -18,28 +20,39 @@ SELECT
   argument.creation_date,
   argument.last_update_time,
   argument.brief,
-  argument.description
+  argument.description,
+  thesis_argument.thesis_id
 FROM argument
 JOIN thesis_argument
   ON argument.id = thesis_argument.argument_id
 WHERE thesis_argument.thesis_id = ANY($1::UUID[])
 `
 
-func (q *Queries) GetArgumentFromThesisId(ctx context.Context, ids []uuid.UUID) ([]Argument, error) {
+type GetArgumentFromThesisIdRow struct {
+	ID             uuid.UUID
+	CreationDate   time.Time
+	LastUpdateTime time.Time
+	Brief          string
+	Description    sql.NullString
+	ThesisID       uuid.UUID
+}
+
+func (q *Queries) GetArgumentFromThesisId(ctx context.Context, ids []uuid.UUID) ([]GetArgumentFromThesisIdRow, error) {
 	rows, err := q.db.QueryContext(ctx, getArgumentFromThesisId, pq.Array(ids))
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Argument
+	var items []GetArgumentFromThesisIdRow
 	for rows.Next() {
-		var i Argument
+		var i GetArgumentFromThesisIdRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.CreationDate,
 			&i.LastUpdateTime,
 			&i.Brief,
 			&i.Description,
+			&i.ThesisID,
 		); err != nil {
 			return nil, err
 		}
