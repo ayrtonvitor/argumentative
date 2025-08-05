@@ -22,11 +22,11 @@ SELECT
 FROM argument
 JOIN thesis_argument
   ON argument.id = thesis_argument.argument_id
-WHERE thesis_argument.thesis_id = $1
+WHERE thesis_argument.thesis_id = ANY($1::UUID[])
 `
 
-func (q *Queries) GetArgumentFromThesisId(ctx context.Context, thesisID uuid.UUID) ([]Argument, error) {
-	rows, err := q.db.QueryContext(ctx, getArgumentFromThesisId, thesisID)
+func (q *Queries) GetArgumentFromThesisId(ctx context.Context, ids []uuid.UUID) ([]Argument, error) {
+	rows, err := q.db.QueryContext(ctx, getArgumentFromThesisId, pq.Array(ids))
 	if err != nil {
 		return nil, err
 	}
@@ -62,11 +62,11 @@ SELECT
   content,
   argument_id
 FROM argumentSources
-WHERE argument_id = $1
+WHERE argument_id = ANY($1::UUID[])
 `
 
-func (q *Queries) GetSourceFromArgumentId(ctx context.Context, argumentID uuid.UUID) ([]Argumentsource, error) {
-	rows, err := q.db.QueryContext(ctx, getSourceFromArgumentId, argumentID)
+func (q *Queries) GetSourceFromArgumentId(ctx context.Context, ids []uuid.UUID) ([]Argumentsource, error) {
+	rows, err := q.db.QueryContext(ctx, getSourceFromArgumentId, pq.Array(ids))
 	if err != nil {
 		return nil, err
 	}
@@ -105,8 +105,8 @@ FROM thesis
 WHERE id = ANY($1::UUID[])
 `
 
-func (q *Queries) GetThesisById(ctx context.Context, dollar_1 []uuid.UUID) ([]Thesis, error) {
-	rows, err := q.db.QueryContext(ctx, getThesisById, pq.Array(dollar_1))
+func (q *Queries) GetThesisById(ctx context.Context, ids []uuid.UUID) ([]Thesis, error) {
+	rows, err := q.db.QueryContext(ctx, getThesisById, pq.Array(ids))
 	if err != nil {
 		return nil, err
 	}

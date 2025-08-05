@@ -6,4 +6,4 @@ SELECT
   title,
   description
 FROM thesis
-WHERE id = ANY($1::UUID[]);
+WHERE id = ANY(@ids::UUID[]);

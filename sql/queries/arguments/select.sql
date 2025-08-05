@@ -8,4 +8,4 @@ SELECT
 FROM argument
 JOIN thesis_argument
   ON argument.id = thesis_argument.argument_id
-WHERE thesis_argument.thesis_id = $1;
+WHERE thesis_argument.thesis_id = ANY(@ids::UUID[]);

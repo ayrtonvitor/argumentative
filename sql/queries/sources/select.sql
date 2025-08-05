@@ -6,4 +6,4 @@ SELECT
   content,
   argument_id
 FROM argumentSources
-WHERE argument_id = $1;
+WHERE argument_id = ANY(@ids::UUID[]);
