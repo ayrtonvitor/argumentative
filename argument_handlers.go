@@ -20,7 +20,7 @@ func (cfg *apiConfig) handleArgumentCreation(w http.ResponseWriter, r *http.Requ
 	params := parameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Could not create argument", err)
+		respondWithError(w, http.StatusBadRequest, "Could not decode request", err)
 		return
 	}
 

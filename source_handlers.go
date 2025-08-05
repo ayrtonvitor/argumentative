@@ -18,7 +18,7 @@ func (cfg *apiConfig) handleSourceCreation(w http.ResponseWriter, r *http.Reques
 	params := parameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Could not add source", err)
+		respondWithError(w, http.StatusBadRequest, "Could not decode request", err)
 		return
 	}
 

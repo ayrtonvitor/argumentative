@@ -18,7 +18,7 @@ func (cfg *apiConfig) handleThesisCreation(w http.ResponseWriter, r *http.Reques
 	params := parameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Could not create Thesis", err)
+		respondWithError(w, http.StatusBadRequest, "Could not decode request", err)
 		return
 	}
 
