@@ -23,7 +23,7 @@ type Argumentsource struct {
 	ID             uuid.UUID
 	CreationDate   time.Time
 	LastUpdateTime time.Time
-	Content        sql.NullString
+	Content        string
 	ArgumentID     uuid.UUID
 }
 

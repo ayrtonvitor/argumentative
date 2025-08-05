@@ -66,7 +66,7 @@ RETURNING id, creation_date, last_update_time, content, argument_id
 `
 
 type CreateArgumentSourcesParams struct {
-	Content    sql.NullString
+	Content    string
 	ArgumentID uuid.UUID
 }
 
