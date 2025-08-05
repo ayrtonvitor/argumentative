@@ -54,6 +54,46 @@ func (q *Queries) GetArgumentFromThesisId(ctx context.Context, thesisID uuid.UUI
 	return items, nil
 }
 
+const getSourceFromArgumentId = `-- name: GetSourceFromArgumentId :many
+SELECT
+  id,
+  creation_date,
+  last_update_time,
+  content,
+  argument_id
+FROM argumentSources
+WHERE argument_id = $1
+`
+
+func (q *Queries) GetSourceFromArgumentId(ctx context.Context, argumentID uuid.UUID) ([]Argumentsource, error) {
+	rows, err := q.db.QueryContext(ctx, getSourceFromArgumentId, argumentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Argumentsource
+	for rows.Next() {
+		var i Argumentsource
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreationDate,
+			&i.LastUpdateTime,
+			&i.Content,
+			&i.ArgumentID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getThesisById = `-- name: GetThesisById :many
 SELECT
   id,
